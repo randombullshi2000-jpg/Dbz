@@ -1,0 +1,16 @@
+{
+  "name": "Z Fighter Incremental \u2014 Story Build",
+  "short_name": "Z Fighter",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b0f14",
+  "theme_color": "#0b0f14",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='512'%20height='512'%3E%3Crect%20width='512'%20height='512'%20rx='96'%20fill='%23111826'/%3E%3Cpath%20d='M128%20288%20c104%20-24%20176%20-96%20200%20-200%20c24%20104%2096%20176%20200%20200%20c-104%2024%20-176%2096%20-200%20200%20c-24%20-104%20-96%20-176%20-200%20-200%20Z'%20fill='%237aa2ff'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

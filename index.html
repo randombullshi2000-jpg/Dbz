@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0f14" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
+  <title>Z Fighter Incremental — Story Build</title>
+</head>
+<body>
+<header class="hdr">
+  <div class="title">
+    <h1>Z Fighter Incremental — Story Build</h1>
+    <div class="sub">Train with Goku → unlock arcs → transform → beat saga bosses → Zenkai.</div>
+  </div>
+  <div class="topbar">
+    <button class="btn primary" id="btnSave">Save</button>
+    <button class="btn" id="btnExport">Export</button>
+    <button class="btn" id="btnImport">Import</button>
+    <button class="btn danger" id="btnHardReset">Hard Reset</button>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="panel">
+    <div class="row split">
+      <div>
+        <div class="label">Core</div>
+        <div class="row">
+          <div class="pill">Level: <b id="lvl">1</b></div>
+          <div class="pill">Zeni: <b id="zeni">0</b></div>
+          <div class="pill">Form: <b id="activeForm">Base</b></div>
+        </div>
+      </div>
+      <div class="right">
+        <div class="label">Progress</div>
+        <div class="pill">Saga: <b id="sagaTier">1</b></div>
+      </div>
+    </div>
+
+    <div class="grid2 mt">
+      <div class="stat">
+        <div class="k">Power Level</div>
+        <div class="v" id="power">0</div>
+        <div class="s" id="powerRate">+0 /s</div>
+      </div>
+      <div class="stat">
+        <div class="k">Ki</div>
+        <div class="v"><span id="ki">0</span> / <span id="kiMax">0</span></div>
+        <div class="s" id="kiRate">+0 /s</div>
+      </div>
+      <div class="stat">
+        <div class="k">Speed</div>
+        <div class="v" id="speed">0</div>
+        <div class="s" id="speedRate">+0 /s</div>
+      </div>
+      <div class="stat">
+        <div class="k">Durability</div>
+        <div class="v" id="tough">0</div>
+        <div class="s" id="toughRate">+0 /s</div>
+      </div>
+      <div class="stat">
+        <div class="k">Ki Control</div>
+        <div class="v" id="control">0</div>
+        <div class="s" id="controlRate">+0 /s</div>
+      </div>
+      <div class="stat">
+        <div class="k">Mastery</div>
+        <div class="v" id="mastery">0</div>
+        <div class="s">Reduces form drain</div>
+      </div>
+    </div>
+
+    <div class="mt">
+      <div class="label">Experience</div>
+      <div class="row split">
+        <div class="pill">XP: <b id="xp">0</b> / <b id="xpNeed">25</b></div>
+        <div class="pill">Permanent Mult: <b id="permMult">1.00×</b></div>
+      </div>
+      <div class="bar mt-sm"><div id="xpBar"></div></div>
+      <div class="row mt">
+        <button class="btn danger" id="btnRebirth">Rebirth (Zenkai)</button>
+        <span class="hint" id="rebirthHint"></span>
+      </div>
+      <div class="hint mt-sm">
+        Phone-friendly. For install/offline: host on https and “Add to Home Screen”.
+      </div>
+    </div>
+
+    <div class="log" id="log"></div>
+  </section>
+
+  <section class="panel">
+    <div class="tabs">
+      <button class="btn tab active" data-tab="train">Training</button>
+      <button class="btn tab" data-tab="tech">Techniques</button>
+      <button class="btn tab" data-tab="forms">Transformations</button>
+      <button class="btn tab" data-tab="fight">Fight</button>
+      <button class="btn tab" data-tab="story">Story</button>
+      <button class="btn tab" data-tab="settings">Settings</button>
+    </div>
+
+    <div id="tab-train">
+      <div class="label">Training</div>
+      <div class="cards" id="trainingCards"></div>
+      <div class="hint mt">Current Training: <b id="currentTraining">None</b></div>
+    </div>
+
+    <div id="tab-tech" class="hidden">
+      <div class="label">Techniques</div>
+      <div class="cards" id="techCards"></div>
+      <div class="hint mt">Spend Zeni to upgrade techniques. Story unlocks more.</div>
+    </div>
+
+    <div id="tab-forms" class="hidden">
+      <div class="label">Transformations</div>
+      <div class="cards" id="formCards"></div>
+      <div class="hint mt">Transformations boost gains + combat but drain Ki. Mastery helps.</div>
+    </div>
+
+    <div id="tab-fight" class="hidden">
+      <div class="cols">
+        <div class="card">
+          <h3>Enemy (Saga Boss)</h3>
+          <p>Beat the boss to gain XP + Zeni and advance the saga.</p>
+          <div class="meta">
+            <span class="pill">HP: <b id="bossHP">0</b> / <b id="bossHPMax">0</b></span>
+            <span class="pill">DPS: <b id="dps">0</b></span>
+          </div>
+          <div class="bar"><div id="bossBar"></div></div>
+          <div class="row mt">
+            <button class="btn primary" id="btnFight">Start Fight</button>
+            <button class="btn" id="btnFlee">Flee</button>
+          </div>
+          <div class="hint mt-sm">
+            Rewards (win): <b id="fightRewards">0</b> XP, <b id="fightZeni">0</b> Zeni
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Combat Stats</h3>
+          <p>Damage scales with Power + Speed. Defense scales with Durability + Ki Control.</p>
+          <div class="meta">
+            <span class="pill">Attack: <b id="atk">0</b></span>
+            <span class="pill">Defense: <b id="def">0</b></span>
+            <span class="pill">Crit: <b id="crit">0</b>%</span>
+          </div>
+          <div class="hint">
+            If you keep losing: train Durability/Ki Control, or buy damage techniques.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-story" class="hidden">
+      <div class="label">Story</div>
+      <div class="card">
+        <h3 id="storyTitle">Prologue</h3>
+        <p id="storyText" class="storyText">Press “Continue” to begin.</p>
+        <div class="row mt">
+          <button class="btn primary" id="btnStoryContinue">Continue</button>
+          <button class="btn" id="btnStoryRecap">Recap</button>
+        </div>
+        <div class="hint mt-sm">
+          Story advances when conditions are met (power level, saga tier, techniques, etc.).
+        </div>
+      </div>
+      <div class="log" id="storyLog"></div>
+    </div>
+
+    <div id="tab-settings" class="hidden">
+      <div class="label">Settings</div>
+      <div class="card">
+        <h3>Quality of Life</h3>
+        <p>Offline progress, autosave, and formatting.</p>
+        <div class="row">
+          <button class="btn" id="btnToggleOffline">Offline Progress: ON</button>
+          <button class="btn" id="btnToggleAutosave">Autosave: ON</button>
+          <button class="btn" id="btnToggleFormat">Formatting: ON</button>
+        </div>
+        <p class="hint mt">
+          PWA note: service worker requires https/localhost. Opening as a file disables offline caching.
+        </p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script type="module" src="./src/app.js"></script>
+</body>
+</html>
